@@ -4,7 +4,7 @@
   "description": "Web app for the SmartVan AWS serverless backend",
   "scripts": {
     "start": "snowpack dev --polyfill-node",
-    "build": "snowpack build",
+    "build": "snowpack build --polyfill-node",
     "test": "echo \"Error: no test specified\" && exit 1",
     "snyk-protect": "snyk protect",
     "prepare": "npm run snyk-protect"
