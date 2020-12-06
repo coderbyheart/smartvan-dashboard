@@ -10,7 +10,11 @@ import {
 	TimestreamQueryContextType,
 	TimestreamQueryContext,
 } from './TimestreamQueryContext'
-import { TimestreamQueryClient } from '@aws-sdk/client-timestream-query'
+import {
+	DescribeEndpointsCommand,
+	TimestreamQueryClient,
+} from '@aws-sdk/client-timestream-query'
+import type { Endpoint } from '@aws-sdk/types'
 
 import '@aws-amplify/ui/dist/style.css'
 
@@ -45,13 +49,28 @@ export const DashboardApp = withAuthenticator(
 		] = useState<TimestreamQueryContextType>()
 
 		useEffect(() => {
+			if (!authData) return
 			Auth.currentCredentials()
 				.then(async (creds) => {
 					const c = Auth.essentialCredentials(creds)
+					console.log(c)
 					setTimestreamQueryContext({
 						client: new TimestreamQueryClient({
 							region,
 							credentials: c,
+							endpoint: async () =>
+								new TimestreamQueryClient({
+									region,
+									credentials: c,
+								})
+									.send(new DescribeEndpointsCommand({}))
+									.then((res) => {
+										console.log(res)
+										const { Endpoints } = res
+										return (new URL(
+											`https://${Endpoints?.[0].Address as string}`,
+										) as unknown) as Endpoint
+									}),
 						}),
 						db,
 						table,
