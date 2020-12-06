@@ -31,13 +31,13 @@ const Measure = ({
 	time: Date
 	label: string
 }) => {
-	const suffix = (value - Math.round(value)).toFixed(2).replace(/^0/, '')
+	const [prefix, suffix] = value.toFixed(2).split('.')
 	return (
 		<div>
 			<h2>{label}</h2>
 			<MeasureValue>
-				{value.toFixed(0)}
-				{!/^\.00$/.test(suffix) && <small>{suffix}</small>}
+				{prefix}
+				{!/^00$/.test(suffix) && <small>.{suffix}</small>}
 			</MeasureValue>
 			<p>
 				<small>

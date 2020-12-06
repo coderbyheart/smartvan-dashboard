@@ -18,8 +18,8 @@ module.exports = {
 		},
 	},
 	buildOptions: {
-		...(process.env.REACT_APP_DEVICE_UI_DOMAIN_NAME !== undefined && {
-			baseUrl: `https://${process.env.REACT_APP_DEVICE_UI_DOMAIN_NAME}`,
+		...(process.env.BASE_URL !== undefined && {
+			baseUrl: `https://${process.env.BASE_URL}`,
 		}),
 	},
 }
