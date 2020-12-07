@@ -17,6 +17,7 @@ import {
 import type { Endpoint } from '@aws-sdk/types'
 
 import '@aws-amplify/ui/dist/style.css'
+import { TemperatureHistory } from './TemperatureHistory'
 
 const region = import.meta.env.SNOWPACK_PUBLIC_AWS_REGION
 const [db, table] = import.meta.env.SNOWPACK_PUBLIC_HISTORYTABLE_INFO.split('|')
@@ -100,6 +101,7 @@ export const DashboardApp = withAuthenticator(
 					<TimestreamQueryContext.Provider value={timestreamQueryContext}>
 						<Main>
 							<Temperature />
+							<TemperatureHistory />
 						</Main>
 					</TimestreamQueryContext.Provider>
 				)}

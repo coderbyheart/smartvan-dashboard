@@ -94,16 +94,6 @@ const ShowTemp = ({
 		]).then(([inside, outside]) => {
 			if (isMounted) {
 				setReadings([...inside, ...outside])
-				console.log(
-					JSON.stringify(
-						{
-							inside,
-							outside,
-						},
-						null,
-						2,
-					),
-				)
 			}
 		})
 		return () => {
