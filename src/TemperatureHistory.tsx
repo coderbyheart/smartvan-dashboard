@@ -27,7 +27,7 @@ const TemperatureChart = ({ readings }: { readings: Reading[] }) => {
 			new Chart(ctx, {
 				type: 'line',
 				data: {
-					labels: readings.map(({ time }) => format(time, 'HH:mm')),
+					labels: readings.map(({ time }) => format(time, 'EEEEEE d.LL. H:00')),
 					datasets: [
 						{
 							label: 'Inside',
@@ -76,7 +76,7 @@ const TemperatureChart = ({ readings }: { readings: Reading[] }) => {
 		)
 	}
 
-	return <Canvas ref={ref} width="400" height="400" />
+	return <Canvas ref={ref} width="400" height="250" />
 }
 
 const LoadTemperatureHistory = ({
@@ -99,7 +99,7 @@ const LoadTemperatureHistory = ({
                             CASE WHEN measure_name = 'outside' THEN measure_value::double ELSE NULL END
                         ) AS outside, bin(time, 1h) as time 
                         FROM "${timestreamQueryContext.db}"."${timestreamQueryContext.table}" 
-                        WHERE measure_name IN ('inside', 'outside') AND time > ago(7d) GROUP BY bin(time, 1h) ORDER BY bin(time, 1h) DESC`,
+                        WHERE measure_name IN ('inside', 'outside') AND time > ago(7d) GROUP BY bin(time, 1h) ORDER BY bin(time, 1h) ASC`,
 				}),
 			)
 			.then((res) => parseResult<Reading>(res as any))
