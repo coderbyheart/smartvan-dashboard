@@ -19,7 +19,7 @@ module.exports = {
 	},
 	buildOptions: {
 		...(process.env.BASE_URL !== undefined && {
-			baseUrl: `https://${process.env.BASE_URL}`,
+			baseUrl: process.env.BASE_URL.replace(/\/+$/, ''), // remove trailing slash
 		}),
 	},
 }
