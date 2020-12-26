@@ -17,66 +17,89 @@ const Canvas = styled.canvas`
 
 type Reading = { inside: number; outside: number; time: Date }
 
-const TemperatureChart = ({ readings }: { readings: Reading[] }) => {
+const TemperatureChart = ({
+	readings,
+	sections,
+}: {
+	readings: Reading[]
+	sections: 'days' | 'hours'
+}) => {
 	const ref = useRef<HTMLCanvasElement>(null)
-	const [chart, setChart] = useState<Chart>()
+	const [chartInstance, setChartInstance] = useState<Chart>()
 
-	if (ref.current !== null && chart === undefined) {
-		const ctx = ref.current.getContext('2d') as CanvasRenderingContext2D
-		setChart(
-			new Chart(ctx, {
-				type: 'line',
-				data: {
-					labels: readings.map(({ time }) => format(time, 'EEEEEE d.LL. H:00')),
-					datasets: [
-						{
-							label: 'Inside',
-							backgroundColor: '#28b4c8',
-							borderColor: '#186A77',
-							fill: false,
-							data: readings.map(({ inside }) => Math.round(inside * 10) / 10),
-							spanGaps: true,
-						},
-						{
-							label: 'Outside',
-							backgroundColor: '#78D237',
-							borderColor: '#40741A',
-							fill: false,
-							data: readings.map(
-								({ outside }) => Math.round(outside * 10) / 10,
-							),
-							spanGaps: true,
-						},
-					],
-				},
-				options: {
-					responsive: true,
-					scales: {
-						xAxes: [
-							{
-								display: true,
-								scaleLabel: {
+	const data = {
+		labels: readings.map(({ time }) =>
+			format(time, sections === 'days' ? 'EEEEEE d.LL. H:00' : 'H:00'),
+		),
+		datasets: [
+			{
+				label: 'Inside',
+				backgroundColor: '#28b4c8',
+				borderColor: '#186A77',
+				fill: false,
+				data: readings.map(({ inside }) => Math.round(inside * 10) / 10),
+				spanGaps: true,
+			},
+			{
+				label: 'Outside',
+				backgroundColor: '#78D237',
+				borderColor: '#40741A',
+				fill: false,
+				data: readings.map(({ outside }) => Math.round(outside * 10) / 10),
+				spanGaps: true,
+			},
+		],
+	}
+
+	useEffect(() => {
+		let chart: Chart
+		if (ref?.current !== null) {
+			setChartInstance(
+				(chart = new Chart(ref.current, {
+					type: 'line',
+					options: {
+						responsive: true,
+						scales: {
+							xAxes: [
+								{
 									display: true,
-									labelString: 'Hour',
+									scaleLabel: {
+										display: true,
+										labelString: 'Hour',
+									},
 								},
-							},
-						],
-						yAxes: [
-							{
-								display: true,
-								scaleLabel: {
+							],
+							yAxes: [
+								{
 									display: true,
-									labelString: 'Temperature',
+									scaleLabel: {
+										display: true,
+										labelString: 'Temperature',
+									},
 								},
-							},
-						],
+							],
+						},
 					},
-				},
-			}),
-		)
+				})),
+			)
+		}
+		return () => {
+			console.log(`Destroying`)
+			chart?.destroy()
+		}
+	}, [ref])
+
+	if (chartInstance) {
+		chartInstance.data = data
+		chartInstance.update()
 	}
 
 	return <Canvas ref={ref} width="400" height="250" />
+}
+
+enum Duration {
+	ONE_WEEK = '7d',
+	ONE_DAY = '1d',
 }
 
 const LoadTemperatureHistory = ({
@@ -84,7 +107,11 @@ const LoadTemperatureHistory = ({
 }: {
 	timestreamQueryContext: TimestreamQueryContextType
 }) => {
-	const [readings, setReadings] = useState<Reading[]>([])
+	const [readings, setReadings] = useState<{
+		data: Reading[]
+		resolution: Duration
+	}>()
+	const [history, setHistory] = useState<Duration>(Duration.ONE_DAY)
 
 	useEffect(() => {
 		let isMounted = true
@@ -99,21 +126,62 @@ const LoadTemperatureHistory = ({
                             CASE WHEN measure_name = 'outside' THEN measure_value::double ELSE NULL END
                         ) AS outside, bin(time, 1h) as time 
                         FROM "${timestreamQueryContext.db}"."${timestreamQueryContext.table}" 
-                        WHERE measure_name IN ('inside', 'outside') AND time > ago(7d) GROUP BY bin(time, 1h) ORDER BY bin(time, 1h) ASC`,
+                        WHERE measure_name IN ('inside', 'outside') AND time > ago(${history}) GROUP BY bin(time, 1h) ORDER BY bin(time, 1h) ASC`,
 				}),
 			)
 			.then((res) => parseResult<Reading>(res as any))
 			.then((readings) => {
 				if (isMounted) {
-					setReadings(readings)
+					setReadings({ data: readings, resolution: history })
 				}
 			})
 		return () => {
 			isMounted = false
 		}
-	}, [timestreamQueryContext])
+	}, [timestreamQueryContext, history])
 
-	return <TemperatureChart readings={readings} />
+	return (
+		<div>
+			{readings && (
+				<TemperatureChart
+					readings={readings.data}
+					sections={
+						readings.resolution === Duration.ONE_WEEK ? 'days' : 'hours'
+					}
+				/>
+			)}
+			<form>
+				<div className="form-check form-check-inline">
+					<input
+						className="form-check-input"
+						type="radio"
+						name="history"
+						id="week"
+						value={Duration.ONE_WEEK}
+						checked={history === Duration.ONE_WEEK}
+						onChange={() => setHistory(Duration.ONE_WEEK)}
+					/>
+					<label className="form-check-label" htmlFor="week">
+						1 week
+					</label>
+				</div>
+				<div className="form-check form-check-inline">
+					<input
+						className="form-check-input"
+						type="radio"
+						name="history"
+						id="day"
+						value={Duration.ONE_DAY}
+						checked={history === Duration.ONE_DAY}
+						onChange={() => setHistory(Duration.ONE_DAY)}
+					/>
+					<label className="form-check-label" htmlFor="day">
+						24 hours
+					</label>
+				</div>
+			</form>
+		</div>
+	)
 }
 
 export const TemperatureHistory = () => (
