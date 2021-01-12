@@ -48,7 +48,7 @@
     "@prefresh/snowpack": "3.0.1",
     "@snowpack/plugin-babel": "2.1.6",
     "@snowpack/plugin-react-refresh": "2.3.9",
-    "@snowpack/plugin-typescript": "1.1.1",
+    "@snowpack/plugin-typescript": "1.2.0",
     "@types/chart.js": "2.9.29",
     "@types/classnames": "2.2.11",
     "@types/jest": "26.0.20",
