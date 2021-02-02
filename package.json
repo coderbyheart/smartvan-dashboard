@@ -53,7 +53,7 @@
     "@types/classnames": "2.2.11",
     "@types/jest": "26.0.20",
     "@types/node": "14.14.22",
-    "@types/react": "17.0.0",
+    "@types/react": "17.0.1",
     "@types/react-dom": "17.0.0",
     "@types/reactstrap": "8.7.2",
     "@types/snowpack-env": "2.3.3",
