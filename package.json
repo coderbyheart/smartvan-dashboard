@@ -33,7 +33,7 @@
     "aws-amplify-react": "4.2.20",
     "bootstrap": "4.6.0",
     "chart.js": "2.9.4",
-    "date-fns": "2.19.0",
+    "date-fns": "2.20.0",
     "minimal.css": "1.0.1",
     "react": "17.0.1",
     "react-dom": "17.0.1",
