@@ -73,7 +73,7 @@
     "lint-staged": "10.5.4",
     "prettier": "2.3.0",
     "snowpack": "2.18.5",
-    "snyk": "1.621.0",
+    "snyk": "1.622.0",
     "typescript": "4.3.2"
   },
   "husky": {
