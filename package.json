@@ -31,7 +31,7 @@
     "amazon-cognito-identity-js": "4.6.3",
     "aws-amplify": "3.4.3",
     "aws-amplify-react": "4.2.20",
-    "bootstrap": "4.6.0",
+    "bootstrap": "5.0.2",
     "chart.js": "2.9.4",
     "date-fns": "2.22.1",
     "minimal.css": "1.0.1",
