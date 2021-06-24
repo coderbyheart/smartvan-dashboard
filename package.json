@@ -26,7 +26,7 @@
   "author": "Markus Tacker | https://coderbyheart.com",
   "license": "MIT",
   "dependencies": {
-    "@aws-sdk/client-timestream-query": "1.0.0-rc.10",
+    "@aws-sdk/client-timestream-query": "3.19.0",
     "@bifravst/timestream-helpers": "1.3.14",
     "amazon-cognito-identity-js": "4.6.3",
     "aws-amplify": "3.4.3",
